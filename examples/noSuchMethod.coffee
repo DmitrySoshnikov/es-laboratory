@@ -16,7 +16,7 @@
   # for that a missed property name is kept as a
   # property of `activator` function and set on `get`
   activator = (args...) ->
-    @noSuchMethod.call(activator.name, args) if typeof @noSuchMethod == "function"
+    @noSuchMethod(activator.__property, args) if typeof @noSuchMethod == "function"
 
   # Object.new creates objects with possible
   # noSuchMethod and noSuchProperty hooks
@@ -38,8 +38,10 @@
 
         # we do not have `isCall` flag, so for every
         # non-existing property return the activator;
-        # Invariant issues: foo.bar (always) === foo.baz,
+        # Invariant issues: foo.bar (always) === other.baz,
         # where both `bar` and `baz` are non-existing props
+        # and `foo` and `other` are different objects
+        activator.__property = name
         activator
 
       # a proxy with handling noSuchMethod

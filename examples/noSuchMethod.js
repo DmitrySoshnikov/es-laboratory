@@ -18,7 +18,7 @@
   // property of `activator` function and set on `get`
   function activator() {
     if (typeof this.noSuchMethod == "function") {
-      return this.noSuchMethod.call(activator.name, arguments);
+      return this.noSuchMethod(activator.__property, arguments);
     };
   };
 
@@ -46,8 +46,10 @@
 
         // we do not have `isCall` flag, so for every
         // non-existing property return the activator;
-        // Invariant issues: foo.bar (always) === foo.baz,
-        // where both `bar` and `baz` are non-existing props
+        // Invariant issues: foo.bar (always) === other.baz,
+        // where both `bar` and `baz` are non-existing props,
+        // and `foo` and `other` are different objects
+        activator.__property = name;
         return activator;
       };
 
