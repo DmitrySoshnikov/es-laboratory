@@ -58,19 +58,18 @@ Object.defineProperty(Object, "getPropertyDescriptor", {
  */
 Object.getPropertyNames ||
 Object.defineProperty(Object, "getPropertyNames", {
-  value: function (object) {
+  value: function(object) {
     var propertyNames = [];
     do {
-      Object.getOwnPropertyNames(object).forEach(function (property) {
-        // leaky linear implementation,
-        // TODO: optimize to O(1) somehow
-        if (propertyNames.indexOf(property) == -1) {
-          propertyNames.push(property);
-        }
-      });
+      propertyNames.push.apply(propertyNames, Object.getOwnPropertyNames(object));
       object = Object.getPrototypeOf(object);
     } while (object);
-    return propertyNames;
+    // get unique property names (thanks @cms for optimization)
+    object = {};
+    for (var k = 0, length = propertyNames.length; k < length; k++) {
+      object[propertyNames[k]] = 1;
+    }
+    return Object.keys(object);
   }
 });
 
