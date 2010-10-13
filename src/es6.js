@@ -44,13 +44,11 @@ Object.getPropertyDescriptor ||
 Object.defineProperty(Object, "getPropertyDescriptor", {
   value: function (object, name) {
     do {
-      object = Object.getPrototypeOf(object);
-      if (object) {
-        var desc = Object.getOwnPropertyDescriptor(object, name);
-        if (desc) {
-          return desc;
-        }
+      var desc = Object.getOwnPropertyDescriptor(object, name);
+      if (desc) {
+        return desc;
       }
+      object = Object.getPrototypeOf(object);
     } while (object);
   }
 });
@@ -61,7 +59,18 @@ Object.defineProperty(Object, "getPropertyDescriptor", {
 Object.getPropertyNames ||
 Object.defineProperty(Object, "getPropertyNames", {
   value: function (object) {
-    // TODO: implement
+    var propertyNames = [];
+    do {
+      Object.getOwnPropertyNames(object).forEach(function (property) {
+        // leaky linear implementation,
+        // TODO: optimize to O(1) somehow
+        if (propertyNames.indexOf(property) == -1) {
+          propertyNames.push(property);
+        }
+      });
+      object = Object.getPrototypeOf(object);
+    } while (object);
+    return propertyNames;
   }
 });
 
